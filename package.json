@@ -1,0 +1,12 @@
+{
+  "name": "mi-app",
+  "version": "0.1.0",
+  "description": "Aplicación base creada con dbv-specs-ops",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}
