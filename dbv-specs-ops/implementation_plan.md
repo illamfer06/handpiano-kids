@@ -79,3 +79,11 @@ Desglosar en un plan aprobado y actualizar las especificaciones antes de añadir
 - Agent Plugin: `node scripts/validate-agent-plugin.mjs`.
 - Para cambios visuales, verificar el resultado en navegador a resolución de escritorio y móvil; las pruebas unitarias no sustituyen la prueba de cámara física.
 - Revisar el diff por errores, seguridad y cumplimiento de las especificaciones antes de cerrar una tarea.
+
+## Plan aprobado — Arreglos finales de pentagrama y evaluación
+
+- **Dependencias:** estilos y componentes React existentes; sin paquetes nuevos.
+- **Riesgos:** el relleno blanco tapa actualmente las líneas musicales; disparar confeti desde el bucle de cámara generaría animación en cada fotograma. El confeti debe depender exclusivamente de una respuesta correcta.
+- **Reversión:** revertir cambios acotados a `App.jsx`, `styles.css`, `App.test.jsx` y documentación de esta tarea, conservando los cambios previos del usuario.
+- **Implementación:** dibujar el trazo de pentagrama por encima de la cabeza de nota manteniendo el borde ovalado; añadir partículas decorativas accesibles/reducidas en el panel de evaluación y activarlas solo en el camino correcto.
+- **Validación:** tests del frontend, build, captura visual del pentagrama y evaluación; verificar nota en línea, nota DO con línea adicional, confeti al acertar y ausencia al fallar.

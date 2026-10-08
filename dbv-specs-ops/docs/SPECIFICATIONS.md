@@ -48,6 +48,8 @@ Los gestos ambiguos que no coinciden con una postura reconocida no seleccionan u
 - Se muestra la nota actual en texto, en el pentagrama y en el teclado de siete notas naturales con teclas de alteración.
 - La evaluación genera tres objetivos de nota y compara la respuesta gestual de la mano derecha; proporciona feedback y permite cancelar.
 - La evaluación y sus resultados viven solo en la sesión actual.
+- Cuando una nota cae sobre una línea del pentagrama, el trazo de la línea debe verse atravesando la cabeza de la nota.
+- Cada respuesta correcta de la evaluación debe lanzar una animación breve de confeti; una respuesta incorrecta no debe lanzarla.
 
 ## 4. Requisitos no funcionales
 
@@ -68,6 +70,8 @@ Los gestos ambiguos que no coinciden con una postura reconocida no seleccionan u
 | AC-06 | Si no hay cámara disponible, se muestra una explicación y se puede practicar de otro modo. | Pendiente: se muestra un mensaje de error, pero no hay modo alternativo. |
 | AC-07 | Perfiles o progreso se conservan entre sesiones. | Fuera del MVP actual: no hay API ni almacenamiento de progreso. |
 | AC-08 | El sitio ofrece metadatos estáticos seguros para descubrimiento del producto. | Implementado en `frontend/public`; validar forma en CI. Cabecera HTTP depende del hosting. |
+| AC-09 | La línea del pentagrama cruza visiblemente las notas colocadas sobre ella. | Implementado con trazo sobre la cabeza, incluida la línea adicional de DO. |
+| AC-10 | Cada acierto de evaluación dispara confeti y los errores no lo disparan. | Implementado; cubierto con pruebas de respuestas correctas e incorrectas y respeta movimiento reducido. |
 
 ## 6. Fuera de alcance hasta una nueva decisión
 

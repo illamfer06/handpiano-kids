@@ -5,7 +5,8 @@ vi.mock('@mediapipe/tasks-vision', () => {
   class HandLandmarker {
     static async createFromOptions() {
       return {
-        detectForVideo: () => ({ landmarks: [], handednesses: [] }),
+        detectForVideo: (video, timestamp) => globalThis.__handPianoDetectForVideo?.(video, timestamp)
+          ?? ({ landmarks: [], handednesses: [] }),
         close: vi.fn(),
       };
     }

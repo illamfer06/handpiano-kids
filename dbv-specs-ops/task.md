@@ -42,9 +42,17 @@ Proyecto HandPiano Kids: frontend React/Vite/JavaScript con MediaPipe y Web Audi
 - [ ] Definir si el backend seguirá siendo una comprobación de salud o tendrá una función de producto.
 - [ ] Decidir el destino del prototipo Express de la raíz antes de retirarlo o conectarlo.
 
+### Tarea en planificación
+
+- [x] AC-09: hacer visible la línea del pentagrama atravesando las cabezas de nota situadas en una línea.
+- [x] AC-10: añadir confeti breve y accesible solo al acertar en evaluación.
+- [x] Añadir cobertura automatizada para acierto/error y comprobar visualmente pentagrama y animación.
+
 ## Historial reciente
 
 - 2026-10-08: organización documental del proyecto conforme al ciclo SDD, aprobada por el usuario. No incluye cambios al código de ejecución.
 - Validación: frontend `npm test` (5 pruebas) y `npm run build` correctos; backend `mvn test` (3 pruebas) correcto. Maven informa que la versión del plugin Spring Boot no está fijada en `pom.xml`.
 - 2026-10-08: adaptación completa de los mecanismos aplicables; se instaló el hook en este clon. El runtime educativo permanece sin cambios; se añadieron metadatos estáticos y cobertura sintética de gestos.
 - Validación de esta fase: 6 pruebas frontend, build frontend, 3 pruebas Maven, validador de prompts/plugin y hook pre-commit con un índice temporal pasaron. Los cinco recursos web devuelven HTTP 200. El workflow de Actions no puede ejecutarse en remoto hasta publicarlo; la protección de rama requiere configuración remota.
+- El usuario aprobó el plan de arreglo del pentagrama y confeti; se implementó en React/CSS y se añadieron pruebas de acierto/error.
+- Validación de los arreglos: 8 pruebas frontend pasan, build y validador de plugin pasan, sin errores de editor. En navegador, el trazo de pentagrama se ve cruzando la nota DO y su línea adicional.

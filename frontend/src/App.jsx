@@ -23,6 +23,21 @@ const STAFF_NOTE_POSITIONS = {
   SI: 'line-3',
 };
 
+const CONFETTI_COLORS = ['#2563eb', '#38bdf8', '#fbbf24', '#f472b6', '#34d399'];
+
+const CONFETTI_PARTICLES = Array.from({ length: 24 }, (_, index) => {
+  const angle = (index / 24) * Math.PI * 2;
+  const distance = 55 + (index % 4) * 14;
+
+  return {
+    color: CONFETTI_COLORS[index % CONFETTI_COLORS.length],
+    x: `${Math.cos(angle) * distance}px`,
+    y: `${Math.sin(angle) * distance - 20}px`,
+    rotation: `${(index % 2 === 0 ? 1 : -1) * (180 + index * 23)}deg`,
+    delay: `${(index % 6) * 12}ms`,
+  };
+});
+
 const ACCIDENTAL_KEYS = [
   { label: 'DO♯ / RE♭', sharpNote: 'DO', flatNote: 'RE', position: 'do-re' },
   { label: 'RE♯ / MI♭', sharpNote: 'RE', flatNote: 'MI', position: 're-mi' },
@@ -210,6 +225,7 @@ function App() {
   const [evaluationTarget, setEvaluationTarget] = useState(null);
   const [evaluationFeedback, setEvaluationFeedback] = useState('');
   const [evaluationComplete, setEvaluationComplete] = useState(false);
+  const [confettiBurst, setConfettiBurst] = useState(0);
   const evaluationActiveRef = useRef(false);
   const evaluationTargetRef = useRef(null);
   const evaluationRoundRef = useRef(0);
@@ -267,6 +283,7 @@ function App() {
     evaluationCanAnswerRef.current = false;
     const currentRound = evaluationRoundRef.current;
     setEvaluationFeedback(`¡Correcto! Has acertado la nota ${detectedNote}.`);
+    setConfettiBurst((burst) => burst + 1);
 
     if (currentRound >= 3) {
       finishEvaluation();
@@ -543,6 +560,23 @@ function App() {
           </div>
 
           <section className={`evaluation-panel ${evaluationActive || evaluationComplete ? 'evaluation-live' : ''}`}>
+            {confettiBurst > 0 && (
+              <div key={confettiBurst} className="confetti-burst" aria-hidden="true">
+                {CONFETTI_PARTICLES.map((particle, index) => (
+                  <span
+                    key={index}
+                    className="confetti-piece"
+                    style={{
+                      '--confetti-color': particle.color,
+                      '--confetti-x': particle.x,
+                      '--confetti-y': particle.y,
+                      '--confetti-rotation': particle.rotation,
+                      '--confetti-delay': particle.delay,
+                    }}
+                  />
+                ))}
+              </div>
+            )}
             <div className="evaluation-copy">
               <span className="note-title">Evaluación</span>
               <strong>{evaluationActive ? `Ronda ${evaluationRound} de 3` : evaluationComplete ? 'Tres rondas completadas' : 'Pon a prueba tu oído visual'}</strong>
