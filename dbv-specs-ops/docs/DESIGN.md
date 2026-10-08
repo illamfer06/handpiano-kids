@@ -26,6 +26,7 @@ Interfaz amable, clara y lúdica para aprender notas sin perder legibilidad. La 
 - Mantener etiquetas textuales; no depender solo del color para indicar una nota.
 - Los botones deben conservar áreas de interacción utilizables y estados distinguibles.
 - Respetar movimiento/transiciones discretas; no introducir animación que dificulte leer las notas.
+- El confeti de acierto es decorativo, breve, no bloquea interacciones y respeta `prefers-reduced-motion`.
 
 ## Validación visual
 

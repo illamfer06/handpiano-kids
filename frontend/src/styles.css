@@ -338,13 +338,31 @@ h1 {
 .note-on-staff.line-3 { top: 90px; }
 
 .whole-note {
+  position: absolute;
+  top: calc(50% + 1px);
+  left: 50%;
   display: block;
-  width: 34px;
-  height: 22px;
+  width: 40px;
+  height: 28px;
+  box-sizing: border-box;
   border: 3px solid #111827;
   border-radius: 50%;
   background: #fff;
-  transform: rotate(-12deg);
+  transform: translate(-50%, -50%) rotate(-12deg);
+}
+
+.note-on-staff.below .whole-note::after,
+.note-on-staff.line-1 .whole-note::after,
+.note-on-staff.line-2 .whole-note::after,
+.note-on-staff.line-3 .whole-note::after {
+  position: absolute;
+  top: 50%;
+  right: 0;
+  left: 0;
+  height: 2px;
+  background: #111827;
+  content: '';
+  transform: translateY(-50%) rotate(12deg);
 }
 
 .accidental-on-staff {
@@ -360,6 +378,7 @@ h1 {
 }
 
 .evaluation-panel {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -369,6 +388,48 @@ h1 {
   border: 1px solid rgba(37, 99, 235, 0.16);
   border-radius: 18px;
   background: linear-gradient(135deg, rgba(219, 234, 254, 0.8), rgba(224, 242, 254, 0.92));
+}
+
+.confetti-burst {
+  position: absolute;
+  z-index: 2;
+  inset: 0;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.confetti-piece {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 7px;
+  height: 11px;
+  border-radius: 2px;
+  background: var(--confetti-color);
+  opacity: 0;
+  animation: confetti-burst 1100ms cubic-bezier(0.16, 0.7, 0.35, 1) var(--confetti-delay) both;
+}
+
+@keyframes confetti-burst {
+  0% {
+    opacity: 0;
+    transform: translate(0, 0) rotate(0);
+  }
+
+  12% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate(var(--confetti-x), var(--confetti-y)) rotate(var(--confetti-rotation));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .confetti-piece {
+    animation-duration: 1ms;
+  }
 }
 
 .evaluation-copy {

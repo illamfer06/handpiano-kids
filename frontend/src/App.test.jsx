@@ -1,10 +1,14 @@
-import { act, fireEvent, render, screen } from '@testing-library/react';
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import App, {
   getRightNoteFromHand,
   getVolumeFromLeftHand,
   getAccidentalLabel,
   playTone,
 } from './App';
+
+const { mockDetectForVideo } = vi.hoisted(() => ({
+  mockDetectForVideo: vi.fn(() => ({ landmarks: [], handednesses: [] })),
+}));
 
 const makeLandmarksForFingerState = ({ thumb, index, middle, ring, pinky }) => {
   const base = Array.from({ length: 21 }, () => ({ x: 0, y: 0, z: 0 }));
@@ -36,6 +40,76 @@ const makeLandmarksForFingerState = ({ thumb, index, middle, ring, pinky }) => {
   return base;
 };
 
+let originalMediaDevices;
+let mediaDevicesCaptured = false;
+
+const setupCameraDetection = async () => {
+  originalMediaDevices = Object.getOwnPropertyDescriptor(navigator, 'mediaDevices');
+  mediaDevicesCaptured = true;
+  const getUserMedia = vi.fn().mockResolvedValue({
+    getTracks: () => [{ stop: vi.fn() }],
+  });
+  const animationFrames = [];
+  const context = {
+    arc: vi.fn(),
+    beginPath: vi.fn(),
+    clearRect: vi.fn(),
+    fill: vi.fn(),
+    lineTo: vi.fn(),
+    moveTo: vi.fn(),
+    stroke: vi.fn(),
+  };
+
+  Object.defineProperty(navigator, 'mediaDevices', {
+    configurable: true,
+    value: { getUserMedia },
+  });
+  vi.spyOn(HTMLMediaElement.prototype, 'play').mockResolvedValue();
+  Object.defineProperty(HTMLMediaElement.prototype, 'readyState', {
+    configurable: true,
+    get: () => 2,
+  });
+  vi.spyOn(HTMLVideoElement.prototype, 'videoWidth', 'get').mockReturnValue(640);
+  vi.spyOn(HTMLVideoElement.prototype, 'videoHeight', 'get').mockReturnValue(480);
+  vi.spyOn(HTMLCanvasElement.prototype, 'getContext').mockReturnValue(context);
+  vi.stubGlobal('requestAnimationFrame', vi.fn((callback) => {
+    animationFrames.push(callback);
+    return animationFrames.length;
+  }));
+  vi.stubGlobal('cancelAnimationFrame', vi.fn());
+  vi.stubGlobal('__handPianoDetectForVideo', mockDetectForVideo);
+
+  render(<App />);
+  await waitFor(() => expect(getUserMedia).toHaveBeenCalled());
+  await waitFor(() => expect(mockDetectForVideo).toHaveBeenCalled());
+
+  const detectNextFrame = async (result) => {
+    mockDetectForVideo.mockReturnValueOnce(result);
+    const callback = animationFrames.shift();
+    expect(callback).toBeDefined();
+    await act(async () => callback());
+  };
+
+  return {
+    detectNextFrame,
+  };
+};
+
+afterEach(() => {
+  if (mediaDevicesCaptured) {
+    if (originalMediaDevices) {
+      Object.defineProperty(navigator, 'mediaDevices', originalMediaDevices);
+    } else {
+      delete navigator.mediaDevices;
+    }
+    originalMediaDevices = undefined;
+    mediaDevicesCaptured = false;
+  }
+  vi.unstubAllGlobals();
+  vi.restoreAllMocks();
+  vi.useRealTimers();
+});
+
 describe('App', () => {
   it('renders the main interface', async () => {
     await act(async () => {
@@ -59,6 +133,53 @@ describe('App', () => {
 
     expect(screen.getByText(/Ronda 1 de 3/i)).toBeInTheDocument();
     expect(screen.getByText(/¿Qué nota es\? Responde con la mano derecha\./i)).toBeInTheDocument();
+  });
+
+  it('shows a confetti burst when the detected note answers correctly', async () => {
+    mockDetectForVideo.mockReset();
+    mockDetectForVideo.mockReturnValue({ landmarks: [], handednesses: [] });
+    vi.spyOn(Math, 'random').mockReturnValue(0);
+    const { detectNextFrame } = await setupCameraDetection();
+    vi.useFakeTimers();
+
+    fireEvent.click(screen.getByRole('button', { name: /Empezar evaluación/i }));
+    await detectNextFrame({ landmarks: [], handednesses: [] });
+    await detectNextFrame({
+      landmarks: [makeLandmarksForFingerState({
+        thumb: false,
+        index: false,
+        middle: false,
+        ring: false,
+        pinky: false,
+      })],
+      handednesses: [[{ displayName: 'Right' }]],
+    });
+
+    expect(screen.getByText('¡Correcto! Has acertado la nota DO.')).toBeInTheDocument();
+    expect(document.querySelectorAll('.confetti-piece')).toHaveLength(24);
+  });
+
+  it('does not show confetti when the detected note is incorrect', async () => {
+    mockDetectForVideo.mockReset();
+    mockDetectForVideo.mockReturnValue({ landmarks: [], handednesses: [] });
+    vi.spyOn(Math, 'random').mockReturnValue(0);
+    const { detectNextFrame } = await setupCameraDetection();
+
+    fireEvent.click(screen.getByRole('button', { name: /Empezar evaluación/i }));
+    await detectNextFrame({ landmarks: [], handednesses: [] });
+    await detectNextFrame({
+      landmarks: [makeLandmarksForFingerState({
+        thumb: true,
+        index: false,
+        middle: false,
+        ring: false,
+        pinky: false,
+      })],
+      handednesses: [[{ displayName: 'Right' }]],
+    });
+
+    expect(screen.getByText('Todavía no. Prueba otra posición de la mano.')).toBeInTheDocument();
+    expect(document.querySelector('.confetti-burst')).not.toBeInTheDocument();
   });
 });
 
