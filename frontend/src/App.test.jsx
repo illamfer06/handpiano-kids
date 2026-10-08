@@ -69,6 +69,30 @@ describe('music logic', () => {
     expect(getRightNoteFromHand(makeLandmarksForFingerState({ thumb: false, index: false, middle: false, ring: false, pinky: false }))).toBe('DO');
   });
 
+  it('covers every supported note and rejects ambiguous right-hand gestures', () => {
+    const cases = [
+      ['DO', { thumb: false, index: false, middle: false, ring: false, pinky: false }],
+      ['RE', { thumb: true, index: false, middle: false, ring: false, pinky: false }],
+      ['MI', { thumb: true, index: true, middle: false, ring: false, pinky: false }],
+      ['FA', { thumb: true, index: true, middle: true, ring: false, pinky: false }],
+      ['SOL', { thumb: true, index: true, middle: true, ring: true, pinky: false }],
+      ['LA', { thumb: true, index: true, middle: true, ring: true, pinky: true }],
+      ['SI', { thumb: true, index: false, middle: false, ring: false, pinky: true }],
+    ];
+
+    cases.forEach(([expectedNote, fingers]) => {
+      expect(getRightNoteFromHand(makeLandmarksForFingerState(fingers))).toBe(expectedNote);
+    });
+
+    expect(getRightNoteFromHand(makeLandmarksForFingerState({
+      thumb: false,
+      index: true,
+      middle: false,
+      ring: false,
+      pinky: false,
+    }))).toBeNull();
+  });
+
   it('maps a left-hand gesture to the expected volume or accidental', () => {
     expect(getVolumeFromLeftHand(makeLandmarksForFingerState({ thumb: true, index: false, middle: false, ring: false, pinky: false }))).toEqual({ type: 'sharp', volume: 0 });
     expect(getVolumeFromLeftHand(makeLandmarksForFingerState({ thumb: false, index: false, middle: false, ring: false, pinky: true }))).toEqual({ type: 'flat', volume: 0 });

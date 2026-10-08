@@ -1,182 +1,78 @@
 # HandPiano Kids
 
-<div align="center">
-  <img src="https://images.unsplash.com/photo-1511379938547-c1f69419868d?auto=format&fit=crop&w=1200&q=80" alt="Music classroom and notes" width="1200" />
-</div>
+Prototipo educativo web para practicar las notas DO–SI mediante gestos frente a la cámara. El frontend muestra la nota en un pentagrama y teclado, sintetiza audio y ofrece una evaluación breve.
 
-<p align="center">
-  <img src="https://img.shields.io/badge/Project-Spec%20Driven%20Development-0A84FF" alt="Spec Driven Development" />
-  <img src="https://img.shields.io/badge/Stack-React%20%2B%20Spring%20Boot-8B5CF6" alt="Stack" />
-  <img src="https://img.shields.io/badge/Status-MVP%20Prototype-F59E0B" alt="Status" />
-</p>
+## Funcionalidad disponible
 
-<p align="center">
-  <strong>Learn music through hand gestures, computer vision, and real-time audio feedback.</strong>
-</p>
+- Reconocimiento de posturas de la mano con MediaPipe en el navegador.
+- Selección de notas, sostenidos/bemoles y control de volumen mediante gestos.
+- Audio sintetizado con Web Audio API.
+- Pentagrama, teclado musical y evaluación de tres rondas.
+- Backend independiente con `GET /api/health`.
 
-HandPiano Kids is an educational application designed to help users learn musical notes through hand gestures, camera capture, and audio synthesis. It blends interactive frontend logic with a backend foundation and follows a structured specification-driven workflow.
+El backend no implementa perfiles ni persistencia de progreso; la configuración PostgreSQL/JPA es infraestructura preparada. El frontend no consume actualmente el backend. La cámara requiere permiso y no existe todavía una modalidad de práctica sin cámara.
 
-## Why this project
+## Stack
 
-This repository follows a Spec-Driven Development approach. Requirements, planning, validation rules, and implementation decisions are documented in the `dbv-specs-ops` folder before the code is extended.
+- Frontend: React 18, Vite 5 y JavaScript.
+- Visión: `@mediapipe/tasks-vision`.
+- Audio: Web Audio API.
+- Backend: Spring Boot 3.3.4, Java 21, Spring Web y Spring Data JPA.
+- Base de datos configurada para el backend: PostgreSQL.
+- Pruebas frontend: Vitest y React Testing Library; backend: Maven/Spring Boot Test.
 
-This means the project should be understood as a specification-first implementation rather than an ad-hoc codebase built without a defined product process.
-
-## Key features
-
-- Real-time hand tracking and note detection
-- Visual staff representation for musical notes
-- Audio feedback for note generation and volume control
-- Evaluation flow for learning and training
-- Full-stack foundation with frontend and backend separation
-- Project documentation and planning aligned to a structured delivery process
-
-## Screenshots
-
-### Interface overview
-
-<img src="https://images.unsplash.com/photo-1516280440614-37939bbacd81?auto=format&fit=crop&w=1200&q=80" alt="Frontend user interface" width="1200" />
-
-### Musical learning experience
-
-<img src="https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?auto=format&fit=crop&w=1200&q=80" alt="Music learning and education" width="1200" />
-
-### Developer workflow and project planning
-
-<img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1200&q=80" alt="Planning and development process" width="1200" />
-
-## Tech stack
-- Frontend: React + Vite + JavaScript
-- Backend: Spring Boot + Java + PostgreSQL
-- Vision: MediaPipe Hands
-- Audio: Web Audio API
-- Workflow: Spec-Driven Development
-
-## Repository structure
-
-```text
-mi-app/
-├── backend/
-│   ├── pom.xml
-│   └── src/
-├── frontend/
-│   ├── package.json
-│   ├── vite.config.js
-│   ├── index.html
-│   └── src/
-├── dbv-specs-ops/
-│   ├── docs/
-│   ├── implementation_plan.md
-│   ├── memory.md
-│   ├── project.config.md
-│   └── task.md
-├── README.md
-├── CLAUDE.md
-├── GEMINI.md
-├── start.bat
-├── .gitignore
-└── .github/
-```
-
-## Current status
-- Phase: MVP / validation iteration
-- Scope: note recognition, visual staff, evaluation flow, and backend foundation
-
-## Requirements
-- Node.js 20+
-- Java 21+
-- Maven
-- PostgreSQL
-
-## Quick start
+## Inicio rápido
 
 ### Frontend
 
-```bash
+Requiere Node.js y npm:
+
+```powershell
 cd frontend
 npm install
 npm run dev
 ```
 
-Open:
-- http://localhost:5173
+Abre <http://localhost:5173>. Para reconocimiento de manos, usa un navegador con cámara y concede permiso. MediaPipe descarga WASM y el modelo desde las URLs externas configuradas en el frontend.
 
-### Backend
+### Backend (opcional para la interfaz actual)
 
-```bash
+Requiere Java 21, Maven y una instancia PostgreSQL que coincida con la configuración local:
+
+```powershell
 cd backend
 mvn spring-boot:run
 ```
 
-Open:
-- http://localhost:8080
+El endpoint de estado está en <http://localhost:8080/api/health>. El script `start.bat` intenta iniciar tanto el frontend como el backend; el frontend puede usarse por separado.
 
-### Windows startup
+## Pruebas
 
-```bat
-start.bat
-```
-
-This script installs frontend dependencies if needed, launches the backend, opens the frontend, and starts the browser for local testing.
-
-The backend requires a PostgreSQL database named `handpianokids` with the credentials defined in `backend/src/main/resources/application.properties`.
-
-## Core endpoints
-- `GET /api/health` — verifies backend availability
-
-## Spec-Driven Development workflow
-
-This project was developed following a structured lifecycle:
-
-1. Specification definition
-2. Planning and configuration
-3. Implementation
-4. Validation and testing
-5. Simplification and refinement
-6. Delivery
-
-The main documents live in:
-- `dbv-specs-ops/docs/`
-- `dbv-specs-ops/implementation_plan.md`
-- `dbv-specs-ops/task.md`
-
-## Testing
-
-### Frontend
-
-```bash
+```powershell
 cd frontend
 npm test
+npm run build
 ```
 
-### Backend
-
-```bash
+```powershell
 cd backend
 mvn test
 ```
 
-## Contribution guidelines
+## Desarrollo guiado por especificaciones
 
-- Keep tests close to the behavior they validate.
-- Prefer small, readable, purpose-specific tests.
-- Cover business logic and UI changes before merging.
-- Run the relevant test suite before finishing a task.
+El proyecto adapta el ciclo completo de `dbv-specs-ops` a VS Code/Copilot: **Spec → Plan → Build → Test → Simplify → Ship**, además de Maintain manual. En Copilot Chat, los prompts de fase se invocan como `/spec`, `/plan`, `/build`, `/test`, `/code-simplify`, `/ship` y `/maintain`.
 
-## PR checklist
+- [Especificaciones](dbv-specs-ops/docs/SPECIFICATIONS.md)
+- [Arquitectura actual](dbv-specs-ops/docs/ARCHITECTURE.md)
+- [Guía de diseño](dbv-specs-ops/docs/DESIGN.md)
+- [Evals de gestos](dbv-specs-ops/docs/EVALS.md)
+- [Pases de revisión](dbv-specs-ops/docs/REVIEW.md)
+- [Guardarraíles y CI](dbv-specs-ops/docs/GUARDRAILS.md)
+- [Plan de evolución](dbv-specs-ops/implementation_plan.md)
+- [Tareas y backlog](dbv-specs-ops/task.md)
+- [Memoria de decisiones](dbv-specs-ops/memory.md)
+- [Maintain y métricas](dbv-specs-ops/docs/MAINTAIN.md), [métricas SDD](dbv-specs-ops/docs/METRICS.md)
+- [Changelog](dbv-specs-ops/CHANGELOG.md)
 
-- [ ] Change is clearly described.
-- [ ] Tests were added or updated for the modified behavior.
-- [ ] Relevant frontend/backend tests pass.
-- [ ] No regressions were introduced.
-- [ ] Documentation was updated when required.
-
-## Notes
-
-This project is intended as a learning and prototyping effort combining computer vision, music education, and full-stack architecture. Its development is aligned with a specification-first process and validation checkpoints throughout the lifecycle.
-
-## About dbv-specs-ops
-
-`dbv-specs-ops` is not a runtime dependency for Node or Maven. It acts as the specification and operations layer of the project, capturing product requirements, planning, and validation records.
-
-The main documents are in `dbv-specs-ops/docs/`, and task status is tracked in `dbv-specs-ops/task.md`.
+Para activar el hook de commit en este clon, ejecuta `.\scripts\install-hooks.ps1`. CI corre en GitHub Actions; configura `quality / frontend` y `quality / backend` como checks requeridos en protección de rama. El dominio/sitemap y la cabecera de descubrimiento en producción dependen de configurar el hosting. Consulta `dbv-specs-ops/docs/MASTER_PROMPT.md` y `.github/copilot-instructions.md` para las reglas del agente.

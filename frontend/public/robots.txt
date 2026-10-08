@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Allow: /.well-known/agent-plugin/
+
+Content-Signal: ai-train=no, search=yes, ai-input=yes
+
+# Add an absolute Sitemap URL after the production domain is configured.

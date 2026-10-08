@@ -1,123 +1,81 @@
-# Implementation Plan
+---
+dependencies:
+  - Existing frontend and backend toolchains; no new runtime dependency for this documentation alignment.
+risks:
+  - Existing planning documents described proposed features and a different frontend stack as if they were current.
+  - Camera behavior and responsive presentation require validation in real browsers and devices.
+rollback_strategy: Revert only the approved SDD/documentation changes; preserve application source and existing user changes.
+---
 
-## 1. Visión general
-Se construirá una aplicación web educativa para niños que usa la cámara para detectar gestos de la mano y convertirlos en notas musicales. La experiencia estará enfocada en la claridad visual, la retroalimentación inmediata y la progresión lúdica.
+# Plan de implementación y evolución
 
-## 2. Arquitectura propuesta
+## 1. Objetivo
+
+Mantener un MVP educativo funcional y evolucionarlo mediante el ciclo SDD. Este plan distingue la arquitectura comprobada de las propuestas futuras y no autoriza por sí solo a añadir perfiles, persistencia ni nuevas dependencias.
+
+## 2. Arquitectura implementada
 
 ### Frontend
-- React + Vite + TypeScript
-- Tailwind CSS para una UI rápida y amigable
-- Componentes para:
-  - cámara
-  - juego
-  - pentagrama
-  - panel de notas
-  - progreso
+
+- React 18 + Vite 5 + JavaScript; aplicación y flujo de interfaz en `frontend/src/App.jsx`.
+- MediaPipe Tasks Vision inicializa el detector de manos y procesa vídeo en el navegador.
+- Funciones de dominio locales mapean landmarks a notas, alteraciones y volumen.
+- Web Audio API sintetiza el sonido; CSS implementa pentagrama, teclado y diseño adaptable.
+- Vitest, React Testing Library y jsdom cubren lógica de gestos y estados básicos de interfaz.
 
 ### Backend
-- Spring Boot 3 + Java 21
-- REST API para:
-  - usuarios
-  - sesiones
-  - progreso
-  - estadísticas
-  - lecciones
 
-### Base de datos
-- PostgreSQL
-- Tablas sugeridas:
-  - usuarios
-  - perfiles
-  - sesiones_juego
-  - progreso_nota
-  - logros
-  - lecciones
+- Spring Boot 3.3.4 y Java 21 en `backend/`.
+- Único endpoint actual: `GET /api/health`.
+- PostgreSQL/JPA están configurados, pero no hay entidades, repositorios de progreso ni API de perfiles.
+- El frontend no consume el backend.
 
-### Reconocimiento de gestos
-- MediaPipe Hands para detectar landmarks de la mano desde la cámara web.
-- Un algoritmo simple de mapeo entre posición de dedos y nota.
-- Validación para evitar falsos positivos.
+### Servicios adicionales
 
-### Audio
-- Web Audio API para sintetizar notas con sonidos suaves de piano.
-- Opción de usar sonido generado localmente para evitar depender de archivos grandes.
+- El servidor Express de la raíz es un prototipo independiente y no forma parte del flujo funcional del frontend.
+- MediaPipe WASM y el modelo se obtienen de URLs externas configuradas en el frontend.
 
-## 3. Flujo del MVP
-1. El usuario entra a la app.
-2. Se solicita acceso a la cámara.
-3. Aparece un modal con instrucciones simples.
-4. El sistema inicia detección de mano.
-5. Cuando se reconoce un gesto, se reproduce la nota y se muestra su nombre.
-6. La nota aparece en el pentagrama.
-7. El sistema valida la respuesta y actualiza el progreso.
+## 3. Plan por hitos
 
-## 4. Modelo de datos
+### Hito 0 — Establecer una base documental cierta
 
-### Usuario
-- id
-- nombre
-- edad
-- nivel
-- fecha_creacion
+- [x] Alinear stack, requisitos, arquitectura, diseño, memoria y backlog con el código actual.
+- [x] Añadir instrucciones SDD para Copilot y un changelog.
+- [x] Mantener intactos el runtime, las dependencias y el comportamiento de la aplicación.
 
-### SesionJuego
-- id
-- usuario_id
-- tipo_modo
-- inicio
-- fin
-- puntuacion
+### Hito 1 — Incorporar mecanismos aplicables de dbv-specs-ops
 
-### ProgresoNota
-- id
-- usuario_id
-- nota
-- aciertos
-- fallos
-- ultima_fecha
+- [x] Confirmar versión de referencia y adaptar instrucciones al stack real.
+- [x] Añadir comandos del ciclo como prompt files de VS Code/Copilot.
+- [x] Incorporar tests/build en GitHub Actions y hook pre-commit opt-in.
+- [x] Añadir revisión por pases, procedimiento de upgrade, métricas, Evals, paralelismo y límites de Maintain.
+- [x] Publicar metadatos estáticos seguros sin inventar endpoint, OAuth, firma ni dominio canónico.
+- [x] Validar la integración y configurar el hook local.
 
-## 5. Regla de negocio principal
-- Un gesto válido desencadena exactamente una nota.
-- Un gesto ambiguo no debe producir sonido.
-- Cada nota debe asociarse a una representación visual clara.
+### Hito 2 — Validar el MVP en navegadores y dispositivos
 
-## 6. Módulos funcionales
-- Módulo de cámara y detector
-- Módulo de audio
-- Módulo de pentagrama
-- Módulo de aprendizaje
-- Módulo de progreso
-- Módulo de autenticación/usuarios
+- [ ] Probar permiso concedido/denegado, cámara ausente y carga fallida de MediaPipe en navegadores objetivo.
+- [ ] Comprobar gestos con cámara real, iluminación y distancias variadas.
+- [ ] Validar la distribución responsive en varias dimensiones y orientación.
+- [ ] Añadir pruebas automatizadas para el flujo de respuestas y cierre de evaluación.
 
-## 7. Riesgos y mitigación
-- Detección inestable por mala iluminación: usar guía visual y ajustes de brillo.
-- Aceptación por parte de niños: simplificar la interfaz y ofrecer animaciones.
-- Latencia de audio: usar síntesis local y evitar carga excesiva.
-- Complejidad del gesto: empezar con un conjunto pequeño y controlado de notas.
+### Hito 3 — Decidir el producto antes de ampliar la arquitectura
 
-## 8. Fase de construcción sugerida
-### Fase 1: MVP
-- 5 notas iniciales
-- detección básica de mano
-- audio de nota
-- visual en pentagrama
+- [ ] Acordar una actividad alternativa cuando la cámara no esté disponible.
+- [ ] Decidir si se necesita persistir progreso; definir minimización, retención y privacidad antes de guardar datos infantiles.
+- [ ] Decidir si Spring Boot/PostgreSQL se mantienen como demostración o se amplían para el producto.
+- [ ] Configurar dominio canónico, sitemap y cabeceras de hosting antes de un despliegue público.
 
-### Fase 2: Gamificación
-- retos y secuencias
-- niveles
-- recompensas visuales
+### Hito 4 — Implementar solo alcance aprobado
 
-### Fase 3: Progreso y analítica
-- historial y métricas
-- perfíl por niño
-- posibles sesiones de profesor
+Desglosar en un plan aprobado y actualizar las especificaciones antes de añadir un modo sin cámara, perfiles, persistencia o nuevas rutas de API. No migrar el frontend a TypeScript/Tailwind ni añadir descubrimiento para agentes sin una decisión explícita.
 
-## 9. Criterios de éxito
-- El niño puede reproducir un gesto identificado por la cámara.
-- La nota se escucha y se ve de forma inmediata.
-- La experiencia es intuitiva sin instrucciones complejas.
-- El sistema guarda el progreso para futuras sesiones.
+## 4. Validación por cambio
 
-## 10. Decisión técnica
-Se recomienda priorizar una solución web con React en frontend y Spring Boot en backend, porque permite una interfaz visual muy amigable para niños y un backend robusto para guardar progreso, estadísticas y futuras extensiones.
+- Frontend: `cd frontend; npm test` y `npm run build`.
+- Backend: `cd backend; mvn test`.
+- Quality gate: `.github/workflows/quality.yml` valida frontend/backend en CI; protección de rama requiere configuración del repositorio remoto.
+- Git local: `scripts/install-hooks.ps1` configura el hook pre-commit.
+- Agent Plugin: `node scripts/validate-agent-plugin.mjs`.
+- Para cambios visuales, verificar el resultado en navegador a resolución de escritorio y móvil; las pruebas unitarias no sustituyen la prueba de cámara física.
+- Revisar el diff por errores, seguridad y cumplimiento de las especificaciones antes de cerrar una tarea.

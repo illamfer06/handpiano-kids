@@ -1,0 +1,12 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "handpiano-kids",
+  "version": "0.1.0",
+  "description": "Información pública e instrucciones de uso de HandPiano Kids.",
+  "license": "MIT",
+  "keywords": [
+    "music-education",
+    "hand-gestures",
+    "learning"
+  ]
+}

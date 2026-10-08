@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+# HandPiano Kids SDD guardrail adapted from dbv-specs-ops v2.9.0.
+set -eu
+
+staged_files="$(git diff --cached --name-only --diff-filter=ACMR)"
+frontend_changed=false
+backend_changed=false
+
+if printf '%s\n' "$staged_files" | grep -qE '^frontend/src/'; then
+  frontend_changed=true
+fi
+
+if printf '%s\n' "$staged_files" | grep -qE '^backend/src/'; then
+  backend_changed=true
+fi
+
+if [ "$frontend_changed" = false ] && [ "$backend_changed" = false ]; then
+  exit 0
+fi
+
+if ! printf '%s\n' "$staged_files" | grep -qx 'dbv-specs-ops/CHANGELOG.md'; then
+  echo "Runtime changes require an entry in dbv-specs-ops/CHANGELOG.md."
+  exit 1
+fi
+
+if [ "$frontend_changed" = true ]; then
+  if ! command -v npm >/dev/null 2>&1; then
+    echo "npm is required to validate staged frontend changes."
+    exit 1
+  fi
+  npm --prefix frontend test
+  npm --prefix frontend run build -- --outDir node_modules/.cache/sdd-build
+fi
+
+if [ "$backend_changed" = true ]; then
+  if ! command -v mvn >/dev/null 2>&1; then
+    echo "Maven is required to validate staged backend changes."
+    exit 1
+  fi
+  mvn --batch-mode -f backend/pom.xml -Dsurefire.reportsDirectory=target/sdd-surefire-reports test
+fi

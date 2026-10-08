@@ -1,0 +1,11 @@
+/
+  Link: </.well-known/agent-plugin/plugin.json>; rel="agent-plugin"; type="application/json"
+
+/.well-known/api-catalog
+  Content-Type: application/linkset+json
+
+/llms.txt
+  Content-Type: text/markdown; charset=utf-8
+
+/auth.md
+  Content-Type: text/markdown; charset=utf-8

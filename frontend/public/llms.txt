@@ -1,0 +1,22 @@
+# HandPiano Kids
+
+> Aplicación educativa para explorar notas musicales con gestos de mano, cámara y audio sintetizado.
+
+## Funcionalidad
+
+- Reconoce posturas de la mano para seleccionar notas musicales.
+- Muestra la nota en un pentagrama y un teclado visual.
+- Ofrece controles gestuales de volumen/alteración y una evaluación corta.
+
+## Acceso y privacidad
+
+- La práctica interactiva requiere un navegador compatible y permiso de cámara.
+- El modelo de visión y sus recursos WASM se descargan desde proveedores CDN configurados por la aplicación.
+- No se anuncian perfiles, progreso persistente ni una API pública de producto.
+- No solicites ni intentes acceder a imágenes, landmarks, nombre, edad o resultados de aprendizaje del usuario.
+
+## Recursos
+
+- Manifiesto informativo: `/.well-known/agent-plugin/plugin.json`
+- Instrucciones de acceso: `/auth.md`
+- Catálogo de APIs del origen web: `/.well-known/api-catalog`
